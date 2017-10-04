@@ -623,7 +623,6 @@ const fetchAttractions = () => {
 		.addEventListener('click', () => handleAddAttraction(attraction))
 
 })
-
 console.log("gonna fetch")
 fetchAttractions();
 
