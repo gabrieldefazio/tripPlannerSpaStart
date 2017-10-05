@@ -22,11 +22,11 @@ const makeOption = (attraction, selector) => {
 };
 
 const buildAttraction = (category, attraction) => {
-	console.log('attraction', category)
+
 	// Append Marker
 	const newMarker = buildMarker(category, attraction.place.location);
 	state.selectedAttractions.push({ id: attraction.id, category});
-	console.log("marker", newMarker)
+
 	newMarker.addTo(map);
 
 	//Add Remove Button
@@ -35,10 +35,10 @@ const buildAttraction = (category, attraction) => {
 	removeButton.innerHTML = 'X';
 
 	// Append Item to day
-	console.log("cat", category)
+	
 	const itineraryItem = document.createElement('li');
 	itineraryItem.className = 'itinerary-item';
-	console.log("itinerary", itineraryItem)
+	
 	itineraryItem.append(attraction.name, removeButton);
 	document.getElementById(`${category}-list`).append(itineraryItem);
 
@@ -87,7 +87,57 @@ const fetchAttractions = () => {
 		.addEventListener('click', () => handleAddAttraction(attraction))
 
 })
-console.log("gonna fetch")
+
+const fetchItineraries = (id) => {
+	fetch(`/api/itineraries/${id}`)
+	.then(result => result.json())
+	.then(itinerary => {
+		itinerary.hotels.forEach(hotel => buildAttraction("hotels", hotel));
+		itinerary.restaurants.forEach(restaurant => buildAttraction("restaurants", restaurant));
+		itinerary.activities.forEach(activity => buildAttraction("activities", activity));
+		console.log("itineraries", itinerary);
+	})
+}
+
+const postItin = () => {
+	let reqBody ={
+		hotels:[],
+		restaurants:[],
+		activities:[]
+	};
+
+	state.selectedAttractions.forEach(attraction => {
+		reqBody[attraction.category].push(attraction.id);
+	});
+
+	console.log("YOOOOOOO", reqBody);
+	
+	fetch('/api/itineraries', {
+		method: 'POST',
+		headers : {
+			'Content-Type' : 'application/json'
+		},
+		body : JSON.stringify(reqBody)
+	})
+}
+
+let saveButton = document.getElementById("save_itin");
+saveButton.addEventListener('click', postItin);
+// fetchItineraries(1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 fetchAttractions();
 
 
